@@ -8,12 +8,18 @@ extends CharacterBody3D
 @export var controller_look_sensitivity := 0.05
 @export var jump_velocity := 6.0
 @export var auto_bhop := true
-@export var walk_speed := 7.0
-@export var sprint_speed := 8.5
 
 const HEADBOB_MOVE_AMOUNT := 0.06
 const HEADBOB_FREQUENCY := 2.04
 var headbob_time := 0.0
+
+# Ground movement settings.
+@export_group("Ground movement")
+@export var walk_speed := 7.0
+@export var sprint_speed := 8.5
+@export var ground_accel := 14.0
+@export var ground_decel := 10.0
+@export var ground_friction := 6.0
 
 # Air movement settings. Need to tweak these to get the feeling dialed in.
 @export_group("Air movement")
@@ -72,8 +78,24 @@ func _process(delta: float) -> void:
 
 
 func _handle_ground_physics(delta: float) -> void:
-	self.velocity.x = wish_dir.x * get_move_speed()
-	self.velocity.z = wish_dir.z * get_move_speed()
+	# self.velocity.x = wish_dir.x * get_move_speed()
+	# self.velocity.z = wish_dir.z * get_move_speed()
+
+	# Similar to air movement. Acceleration and friction on ground.
+	var cur_speed_in_wish_dir := self.velocity.dot(wish_dir)
+	var add_speed_till_cap := get_move_speed() - cur_speed_in_wish_dir
+	if add_speed_till_cap >0:
+		var accel_speed := ground_accel * delta * get_move_speed()
+		accel_speed = min(accel_speed, add_speed_till_cap)
+		self.velocity += accel_speed * wish_dir
+
+	# Apply friction
+	var control: float = max(self.velocity.length(), ground_decel)
+	var drop := control * ground_friction * delta
+	var new_speed: float = max(self.velocity.length() - drop, 0.0)
+	if self.velocity.length() > 0:
+		new_speed /= self.velocity.length()
+	self.velocity *= new_speed
 
 	_headbob_effect(delta)
 
