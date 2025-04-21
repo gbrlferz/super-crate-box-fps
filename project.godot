@@ -11,5 +11,6 @@ config_version=5
 [application]
 
 config/name="super-crate-box-fps"
+run/main_scene="uid://xqd5ps5hs2g5"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
