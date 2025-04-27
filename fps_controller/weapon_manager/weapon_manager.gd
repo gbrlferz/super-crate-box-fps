@@ -20,3 +20,15 @@ func update_weapon_model() -> void:
 		if view_model_container || current_weapon_view_model:
 			current_weapon_view_model = current_weapon.view_model.instantiate()
 			view_model_container.add_child(current_weapon_view_model)
+			current_weapon_view_model.position = current_weapon.pos
+			current_weapon_view_model.rotation = current_weapon.rot
+			play_animation(current_weapon.view_idle_animation)
+
+
+func play_animation(animation_name: String) -> void:
+	var animation_player : AnimationPlayer = current_weapon_view_model.get_node_or_null("AnimationPlayer")
+	if not animation_player || !animation_player.has_animation(animation_name):
+		return
+
+	animation_player.seek(0.0)
+	animation_player.play(animation_name)

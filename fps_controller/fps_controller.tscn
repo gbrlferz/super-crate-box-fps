@@ -3685,7 +3685,6 @@ shape = SubResource("CapsuleShape3D_r46qa")
 
 [node name="WorldModel" type="Node3D" parent="."]
 unique_name_in_owner = true
-visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -3709,7 +3708,7 @@ target_position = Vector3(0, 0, -100)
 [node name="ViewModel" type="Node3D" parent="Head/Camera3D"]
 
 [node name="deagle" type="Node3D" parent="Head/Camera3D/ViewModel"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.4, -0.1)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.1, -0.3, 0.3)
 
 [node name="Skeleton3D" type="Skeleton3D" parent="Head/Camera3D/ViewModel/deagle"]
 bones/0/name = "DEF-upper_arm.L.001"

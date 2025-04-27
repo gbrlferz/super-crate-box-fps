@@ -6,8 +6,11 @@
 [resource]
 script = ExtResource("1_r6acv")
 view_model = ExtResource("2_85qtu")
-position = Vector3(0, -0.45, -1)
-rotation = Vector3(-90, 180, 0)
-scale = Vector3(0, 0, 0)
+pos = Vector3(0.1, -0.3, 0.3)
+rot = Vector3(0, 3.14159, 0)
 damage = 10
+view_idle_animation = "Idle"
+view_equip_animation = "Unholster"
+view_shoot_animation = "Shoot"
+view_reload_animation = "Reload"
 metadata/_custom_type_script = "uid://fwtydeu62cgp"
