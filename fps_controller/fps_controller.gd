@@ -28,6 +28,10 @@ var headbob_time := 0.0
 @export var air_move_speed := 500.0
 
 var wish_dir := Vector3.ZERO
+var cam_aligned_wish_dir := Vector3.ZERO
+
+var no_clip_speed_mult := 3.0
+var no_clip := false
 
 
 func get_move_speed() -> float:
@@ -77,10 +81,31 @@ func _process(delta: float) -> void:
 	_handle_controller_look_input(delta)
 
 
-func _handle_ground_physics(delta: float) -> void:
-	# self.velocity.x = wish_dir.x * get_move_speed()
-	# self.velocity.z = wish_dir.z * get_move_speed()
+func _handle_noclip(delta: float) -> bool:
+	if Input.is_action_just_pressed("no_clip") and OS.has_feature("debug"):
+		no_clip = !no_clip
+	
+	$CollisionShape3D.disabled = no_clip
 
+	if not no_clip:
+		return false
+
+	var speed = get_move_speed() * no_clip_speed_mult
+	if Input.is_action_pressed("sprint"):
+		speed *= 3.0
+
+	if Input.is_action_pressed("jump"):
+		global_position += Vector3.UP * speed * delta
+	elif Input.is_action_pressed("crouch"):
+		global_position += Vector3.DOWN * speed * delta
+
+	self.velocity = cam_aligned_wish_dir * speed
+	global_position += self.velocity * delta
+
+	return true
+
+
+func _handle_ground_physics(delta: float) -> void:
 	# Similar to air movement. Acceleration and friction on ground.
 	var cur_speed_in_wish_dir := self.velocity.dot(wish_dir)
 	var add_speed_till_cap := get_move_speed() - cur_speed_in_wish_dir
@@ -122,18 +147,21 @@ func _handle_air_physics(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	var input_dir: Vector2
-	if InputEventJoypadMotion:
+
+	if InputEventJoypadMotion: # Don't normalize input if it's a controller
 		input_dir = Input.get_vector("left", "right", "up", "down")
 	else:
 		input_dir = Input.get_vector("left", "right", "up", "down").normalized()
 
 	wish_dir = self.global_transform.basis * Vector3(input_dir.x, 0., input_dir.y)
+	cam_aligned_wish_dir = camera.global_transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)
 
-	if is_on_floor():
-		if Input.is_action_pressed("jump") || (auto_bhop && Input.is_action_pressed("jump")):
-			self.velocity.y = jump_velocity
-		_handle_ground_physics(delta)
-	else:
-		_handle_air_physics(delta)
+	if not _handle_noclip(delta):
+		if is_on_floor():
+			if Input.is_action_pressed("jump") || (auto_bhop && Input.is_action_pressed("jump")):
+				self.velocity.y = jump_velocity
+			_handle_ground_physics(delta)
+		else:
+			_handle_air_physics(delta)
 
-	move_and_slide()
+		move_and_slide()
