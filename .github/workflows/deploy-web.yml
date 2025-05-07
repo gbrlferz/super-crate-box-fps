@@ -12,17 +12,21 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Export Godot Project (Web)
-      uses: firebelley/godot-export@v6.0.0  # Updated to latest version :cite[1]:cite[2]
+      uses: firebelley/godot-export@v6.0.0
       with:
-        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_headless.64.zip
-        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_export_templates.tpz
+        # Use GitHub's official Godot mirror instead of TuxFamily
+        godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4-stable/Godot_v4.4-stable_linux_headless.64.zip
+        godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4-stable/Godot_v4.4-stable_export_templates.tpz
         relative_project_path: ./
-        use_preset_export_path: true  # Use path from export_presets.cfg :cite[1]
-        cache: true  # Faster subsequent builds :cite[3]
+        use_preset_export_path: true
+        cache: true
 
     - name: Install Butler
       run: |
-        curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        # Add retry logic for butler installation
+        for i in {1..5}; do
+          curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default && break || sleep 15
+        done
         unzip -q butler.zip
         chmod +x butler
         ./butler -V
