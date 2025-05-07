@@ -1,0 +1,33 @@
+name: Deploy to itch.io
+
+on:
+  push:
+    branches: [ main ] # Trigger on main branch pushes
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Export Godot Project (Web)
+      uses: firebelley/godot-export@v3
+      with:
+        godot-version: '4.4' # Match your Godot version
+        export-preset: 'Web' # Must match your preset name
+        pack-path: './project.godot'
+        output-path: './web-build'
+
+    - name: Install Butler
+      run: |
+        curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        unzip butler.zip
+        chmod +x butler
+        ./butler -V
+
+    - name: Deploy to itch.io
+      run: |
+        ./butler push ./web-build ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:web
+      env:
+        BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
