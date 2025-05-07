@@ -2,7 +2,7 @@ name: Deploy to itch.io
 
 on:
   push:
-    branches: [ main ] # Trigger on main branch pushes
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -14,20 +14,22 @@ jobs:
     - name: Export Godot Project (Web)
       uses: firebelley/godot-export@v3
       with:
-        godot-version: '4.4' # Match your Godot version
-        export-preset: 'Web' # Must match your preset name
+        godot-version: '4.4'
+        # Custom URL for Godot 4.4 Linux headless build
+        godot-download-url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_headless.64.zip
+        export-preset: 'Web'
         pack-path: './project.godot'
-        output-path: './web-build'
+        output-path: './web'  # Matches your export_presets.cfg "web/index.html"
 
     - name: Install Butler
       run: |
-        curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-        unzip butler.zip
+        curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        unzip -q butler.zip
         chmod +x butler
         ./butler -V
 
     - name: Deploy to itch.io
       run: |
-        ./butler push ./web-build ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:web
+        ./butler push --fix-permissions --verbose ./web ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:web
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
