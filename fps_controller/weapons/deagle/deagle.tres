@@ -1,16 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=3 format=3 uid="uid://yb8qw8suxqoe"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=2 format=3 uid="uid://yb8qw8suxqoe"]
 
 [ext_resource type="Script" uid="uid://fwtydeu62cgp" path="res://fps_controller/weapon_manager/weapon_resource.gd" id="1_r6acv"]
-[ext_resource type="PackedScene" uid="uid://c2o2u3owo3145" path="res://fps_controller/weapons/deagle/deagle.glb" id="2_85qtu"]
 
 [resource]
 script = ExtResource("1_r6acv")
-view_model = ExtResource("2_85qtu")
-pos = Vector3(0.1, -0.3, 0.3)
-rot = Vector3(0, 3.14159, 0)
 damage = 10
-view_idle_animation = "Idle"
-view_equip_animation = "Unholster"
-view_shoot_animation = "Shoot"
-view_reload_animation = "Reload"
 metadata/_custom_type_script = "uid://fwtydeu62cgp"

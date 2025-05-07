@@ -1,7 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://xqd5ps5hs2g5"]
+[gd_scene load_steps=10 format=3 uid="uid://xqd5ps5hs2g5"]
 
 [ext_resource type="PackedScene" uid="uid://c1us2u15454rf" path="res://fps_controller/fps_controller.tscn" id="1_uwrxv"]
 [ext_resource type="Material" uid="uid://w5ux2u2ooto5" path="res://materials/prototype.tres" id="2_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://dnkd7ujhu5sqc" path="res://scenes/enemy.tscn" id="3_lnu2h"]
+
+[sub_resource type="Gradient" id="Gradient_lnu2h"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.422566, 0.497788)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lbhrr"]
+gradient = SubResource("Gradient_lnu2h")
+width = 6
+height = 6
+fill = 1
+fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_uwrxv"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -16,7 +29,38 @@ sky = SubResource("Sky_yqjtg")
 tonemap_mode = 2
 glow_enabled = true
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_lnu2h"]
+vertices = PackedVector3Array(-12, 0.5005, 0, -1.5, 0.5005, 0, -1.5, 0.5005, -1, 0, 0.5005, -1.5, 0, 0.5005, -12, -12, 0.5005, -12, 1, 0.5005, -1.5, 1.5, 0.5005, 0, 12, 0.5005, 0, 12, 0.5005, -12, -0.5, 4.2505, -0.5, -0.5, 4.2505, 0.5, 0.5, 4.2505, 0.5, 0.5, 4.2505, -0.5, -1.5, 0.5005, 1, 0, 0.5005, 12, 0, 0.5005, 1.5, -12, 0.5005, 12, 1, 0.5005, 1.5, 12, 0.5005, 12)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(3, 2, 4), PackedInt32Array(4, 2, 5), PackedInt32Array(5, 2, 0), PackedInt32Array(6, 3, 4), PackedInt32Array(7, 6, 8), PackedInt32Array(8, 6, 9), PackedInt32Array(9, 6, 4), PackedInt32Array(13, 12, 10), PackedInt32Array(10, 12, 11), PackedInt32Array(0, 1, 14), PackedInt32Array(16, 15, 14), PackedInt32Array(14, 15, 17), PackedInt32Array(14, 17, 0), PackedInt32Array(15, 16, 18), PackedInt32Array(7, 8, 18), PackedInt32Array(18, 8, 19), PackedInt32Array(18, 19, 15)]
+
 [node name="Game" type="Node3D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_lbhrr")
+stretch_mode = 2
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
@@ -25,12 +69,33 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_lnu2h")
 
-[node name="CharacterBody3D" parent="." instance=ExtResource("1_uwrxv")]
+[node name="EnemySpawner" type="Node" parent="."]
 
-[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+[node name="Marker3D" type="Marker3D" parent="EnemySpawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6387, 4.76837e-07, -8.75747)
+gizmo_extents = 1.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_lnu2h")
+
+[node name="Map" type="Node3D" parent="NavigationRegion3D"]
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="NavigationRegion3D/Map"]
 use_collision = true
 
-[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D"]
+[node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4995, 0)
 size = Vector3(25, 1, 25)
 material = ExtResource("2_yqjtg")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+radius = 1.0
+height = 4.0
+
+[node name="Player" parent="." instance=ExtResource("1_uwrxv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.73483, 0, -9.0594)
+
+[node name="Enemy" parent="." node_paths=PackedStringArray("target") instance=ExtResource("3_lnu2h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0)
+target = NodePath("../NavigationRegion3D/Map/CSGCombiner3D/CSGCylinder3D")

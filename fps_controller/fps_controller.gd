@@ -4,7 +4,7 @@ extends CharacterBody3D
 @onready var camera := %Camera3D
 @onready var world_model := %WorldModel
 
-@export var look_sensitivity := 0.006
+@export_range(0.0, 20.0) var look_sensitivity := 1.0
 @export var controller_look_sensitivity := 0.05
 @export var jump_velocity := 6.0
 @export var auto_bhop := true
@@ -29,7 +29,6 @@ var headbob_time := 0.0
 
 var wish_dir := Vector3.ZERO
 var cam_aligned_wish_dir := Vector3.ZERO
-
 var no_clip_speed_mult := 3.0
 var no_clip := false
 
@@ -47,8 +46,8 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		if event is InputEventMouseMotion:
-			rotate_y(-event.relative.x * look_sensitivity)
-			camera.rotate_x(-event.relative.y * look_sensitivity)
+			rotate_y(-event.relative.x * look_sensitivity * 0.001)
+			camera.rotate_x(-event.relative.y * look_sensitivity * 0.001)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
 	else:
 		if event.is_action_pressed("ui_cancel"):
@@ -69,11 +68,11 @@ func _headbob_effect(delta: float) -> void:
 			)
 
 
-func _handle_controller_look_input(_delta: float) -> void:
+func _handle_controller_look_input(delta: float) -> void:
 	var target_look := Input.get_vector("look_left", "look_right", "look_down", "look_up")
 	var _cur_controller_look := target_look
-	rotate_y(-_cur_controller_look.x * controller_look_sensitivity) # turn left and right
-	camera.rotate_x(_cur_controller_look.y * controller_look_sensitivity) # turn up and down
+	rotate_y(-_cur_controller_look.x * controller_look_sensitivity * delta) # turn left and right
+	camera.rotate_x(_cur_controller_look.y * controller_look_sensitivity * delta) # turn up and down
 	camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-90), deg_to_rad(90))
 
 
@@ -136,7 +135,7 @@ func _handle_air_physics(delta: float) -> void:
 	var capped_speed: float = min((air_move_speed * wish_dir).length(), air_cap)
 	# How much to get to the speed the player wishes (in the new dir)
 	# Notice this allows for infinite speed. If wish_dir is perpendicular, we always need to add velocity
-	#  no matter how fast we are going. This is what allows for things like bhop in CSS & Quake.
+	# no matter how fast we are going. This is what allows for things like bhop in CSS & Quake.
 	# Also happens to just give some very nice feeling movement & responsiveness when in air.
 	var add_speed_till_cap := capped_speed - cur_speed_in_wish_dir
 	if add_speed_till_cap > 0:

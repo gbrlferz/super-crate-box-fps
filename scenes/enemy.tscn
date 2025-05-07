@@ -1,0 +1,46 @@
+[gd_scene load_steps=8 format=3 uid="uid://dnkd7ujhu5sqc"]
+
+[ext_resource type="Script" uid="uid://ccebfljtsqfu" path="res://enemies/enemy.gd" id="1_4ra3w"]
+[ext_resource type="Script" uid="uid://caqtynp6pw4vw" path="res://hit_box/hit_box.gd" id="1_7p1mj"]
+[ext_resource type="Script" uid="uid://dgxdnvt6lmjyo" path="res://hit_box/health_component.gd" id="2_md0e3"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8tegq"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8tegq"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_8tegq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8tegq"]
+albedo_color = Color(0.637552, 2.32231e-06, 2.88785e-07, 1)
+
+[node name="Enemy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_4ra3w")
+
+[node name="HitBox" type="Area3D" parent="."]
+collision_layer = 64
+collision_mask = 0
+script = ExtResource("1_7p1mj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HitBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_8tegq")
+
+[node name="HealthComponent" type="Node" parent="HitBox"]
+script = ExtResource("2_md0e3")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_height_offset = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_8tegq")
+
+[node name="WorldModel" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WorldModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_8tegq")
+surface_material_override/0 = SubResource("StandardMaterial3D_8tegq")

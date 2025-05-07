@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8wtwakfof8sn"]
+[gd_scene load_steps=3 format=3 uid="uid://c8wtwakfof8sn"]
 
 [ext_resource type="Script" uid="uid://dd65ngynwsjgs" path="res://fps_controller/weapon_manager/weapon_manager.gd" id="1_o11xd"]
+[ext_resource type="Resource" uid="uid://yb8qw8suxqoe" path="res://fps_controller/weapons/deagle/deagle.tres" id="2_qiy83"]
 
 [node name="WeaponManager" type="Node3D"]
 script = ExtResource("1_o11xd")
+current_weapon = ExtResource("2_qiy83")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
