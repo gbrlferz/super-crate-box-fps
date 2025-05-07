@@ -12,14 +12,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Export Godot Project (Web)
-      uses: firebelley/godot-export@v3
+      uses: firebelley/godot-export@v6.0.0  # Updated to latest version :cite[1]:cite[2]
       with:
-        godot-version: '4.4'
-        # Custom URL for Godot 4.4 Linux headless build
-        godot-download-url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_headless.64.zip
-        export-preset: 'Web'
-        pack-path: './project.godot'
-        output-path: './web'  # Matches your export_presets.cfg "web/index.html"
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_linux_headless.64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.4/Godot_v4.4-stable_export_templates.tpz
+        relative_project_path: ./
+        use_preset_export_path: true  # Use path from export_presets.cfg :cite[1]
+        cache: true  # Faster subsequent builds :cite[3]
 
     - name: Install Butler
       run: |
