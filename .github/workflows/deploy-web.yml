@@ -7,23 +7,34 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: web
+            preset: Web
+            output_dir: web
+            butler_channel: web
+          - platform: windows
+            preset: Windows
+            output_dir: windows
+            butler_channel: win
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Export Godot Project (Web)
+    - name: Export Godot Project (${{ matrix.platform }})
       uses: firebelley/godot-export@v6.0.0
       with:
-        # Use GitHub's official Godot mirror instead of TuxFamily
         godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
         godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
         relative_project_path: ./
-        use_preset_export_path: true
+        export_preset: ${{ matrix.preset }}
+        output_path: ./${{ matrix.output_dir }}
         cache: true
+        cache_key: godot-${{ matrix.platform }}
 
     - name: Install Butler
       run: |
-        # Add retry logic for butler installation
         for i in {1..5}; do
           curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default && break || sleep 15
         done
@@ -31,8 +42,8 @@ jobs:
         chmod +x butler
         ./butler -V
 
-    - name: Deploy to itch.io
+    - name: Deploy ${{ matrix.platform }} to itch.io
       run: |
-        ./butler push --fix-permissions --verbose ./web ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:web
+        ./butler push --fix-permissions --verbose ./${{ matrix.output_dir }} ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:${{ matrix.butler_channel }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
