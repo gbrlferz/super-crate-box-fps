@@ -1,3 +1,4 @@
+class_name Player
 extends CharacterBody3D
 
 
@@ -31,6 +32,10 @@ var wish_dir := Vector3.ZERO
 var cam_aligned_wish_dir := Vector3.ZERO
 var no_clip_speed_mult := 3.0
 var no_clip := false
+
+
+func _init() -> void:
+	Global.player = self
 
 
 func get_move_speed() -> float:

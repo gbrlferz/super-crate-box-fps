@@ -1,8 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://xqd5ps5hs2g5"]
+[gd_scene load_steps=12 format=3 uid="uid://xqd5ps5hs2g5"]
 
+[ext_resource type="Script" uid="uid://c78xynregrfk5" path="res://enemies/enemy_spawner.gd" id="1_lbhrr"]
 [ext_resource type="PackedScene" uid="uid://c1us2u15454rf" path="res://fps_controller/fps_controller.tscn" id="1_uwrxv"]
 [ext_resource type="Material" uid="uid://w5ux2u2ooto5" path="res://materials/prototype.tres" id="2_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://dnkd7ujhu5sqc" path="res://scenes/enemy.tscn" id="3_lnu2h"]
+[ext_resource type="Script" uid="uid://dep7fi63k4d47" path="res://portal/portal.gd" id="5_iywne"]
 
 [sub_resource type="Gradient" id="Gradient_lnu2h"]
 interpolation_mode = 1
@@ -30,8 +32,8 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_lnu2h"]
-vertices = PackedVector3Array(-12, 0.5005, 0, -1.5, 0.5005, 0, -1.5, 0.5005, -1, 0, 0.5005, -1.5, 0, 0.5005, -12, -12, 0.5005, -12, 1, 0.5005, -1.5, 1.5, 0.5005, 0, 12, 0.5005, 0, 12, 0.5005, -12, -0.5, 4.2505, -0.5, -0.5, 4.2505, 0.5, 0.5, 4.2505, 0.5, 0.5, 4.2505, -0.5, -1.5, 0.5005, 1, 0, 0.5005, 12, 0, 0.5005, 1.5, -12, 0.5005, 12, 1, 0.5005, 1.5, 12, 0.5005, 12)
-polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(3, 2, 4), PackedInt32Array(4, 2, 5), PackedInt32Array(5, 2, 0), PackedInt32Array(6, 3, 4), PackedInt32Array(7, 6, 8), PackedInt32Array(8, 6, 9), PackedInt32Array(9, 6, 4), PackedInt32Array(13, 12, 10), PackedInt32Array(10, 12, 11), PackedInt32Array(0, 1, 14), PackedInt32Array(16, 15, 14), PackedInt32Array(14, 15, 17), PackedInt32Array(14, 17, 0), PackedInt32Array(15, 16, 18), PackedInt32Array(7, 8, 18), PackedInt32Array(18, 8, 19), PackedInt32Array(18, 19, 15)]
+vertices = PackedVector3Array(-12, 0.5005, -12, -12, 0.5005, 12, 12, 0.5005, 12, 12, 0.5005, -12)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [node name="Game" type="Node3D"]
 
@@ -70,6 +72,8 @@ shadow_enabled = true
 environment = SubResource("Environment_lnu2h")
 
 [node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("1_lbhrr")
+enemy = ExtResource("3_lnu2h")
 
 [node name="Marker3D" type="Marker3D" parent="EnemySpawner"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6387, 4.76837e-07, -8.75747)
@@ -81,21 +85,30 @@ navigation_mesh = SubResource("NavigationMesh_lnu2h")
 [node name="Map" type="Node3D" parent="NavigationRegion3D"]
 
 [node name="CSGCombiner3D" type="CSGCombiner3D" parent="NavigationRegion3D/Map"]
+operation = 2
 use_collision = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4995, 0)
-size = Vector3(25, 1, 25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0005, 0)
+size = Vector3(32, 4, 32)
 material = ExtResource("2_yqjtg")
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-radius = 1.0
-height = 4.0
+[node name="CSGBox3D2" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0122547, 1.5466, 0.0015583)
+operation = 2
+size = Vector3(30, 3, 30)
+material = ExtResource("2_yqjtg")
 
 [node name="Player" parent="." instance=ExtResource("1_uwrxv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.73483, 0, -9.0594)
 
-[node name="Enemy" parent="." node_paths=PackedStringArray("target") instance=ExtResource("3_lnu2h")]
+[node name="Enemy" parent="." instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0, 0)
-target = NodePath("../NavigationRegion3D/Map/CSGCombiner3D/CSGCylinder3D")
+
+[node name="Portal" type="Node3D" parent="."]
+script = ExtResource("5_iywne")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Portal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+radius = 1.0
+height = 4.0
