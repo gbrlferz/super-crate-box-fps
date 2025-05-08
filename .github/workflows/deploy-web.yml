@@ -10,28 +10,27 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: web
-            preset: Web
-            output_dir: web
+          - preset: Web
             butler_channel: web
-          - platform: windows
-            preset: Windows
-            output_dir: windows
+          - preset: Windows
             butler_channel: win
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Export Godot Project (${{ matrix.platform }})
+    - name: Export Godot Project (${{ matrix.preset }})
       uses: firebelley/godot-export@v6.0.0
       with:
         godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
         godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
         relative_project_path: ./
-        export_preset: ${{ matrix.preset }}
-        output_path: ./${{ matrix.output_dir }}
+        presets_to_export: ${{ matrix.preset }}  # Correct input name
+        use_preset_export_path: true  # Use paths from export_presets.cfg
         cache: true
-        cache_key: godot-${{ matrix.platform }}
+
+    - name: Verify Export Output
+      run: |
+        ls -lR ./${{ matrix.preset | lower }}
 
     - name: Install Butler
       run: |
@@ -42,8 +41,10 @@ jobs:
         chmod +x butler
         ./butler -V
 
-    - name: Deploy ${{ matrix.platform }} to itch.io
+    - name: Deploy ${{ matrix.preset }} to itch.io
       run: |
-        ./butler push --fix-permissions --verbose ./${{ matrix.output_dir }} ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:${{ matrix.butler_channel }}
+        ./butler push --fix-permissions --verbose \
+          ./${{ matrix.preset | lower }} \
+          ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:${{ matrix.butler_channel }}
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
