@@ -32,7 +32,7 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_lnu2h"]
-vertices = PackedVector3Array(-12, 0.5005, -12, -12, 0.5005, 12, 12, 0.5005, 12, 12, 0.5005, -12)
+vertices = PackedVector3Array(-15.5, 0.5005, -15.5, -15.5, 0.5005, 15.5, 15.5, 0.5005, 15.5, 15.5, 0.5005, -15.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [node name="Game" type="Node3D"]
@@ -89,14 +89,8 @@ operation = 2
 use_collision = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0005, 0)
-size = Vector3(32, 4, 32)
-material = ExtResource("2_yqjtg")
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0122547, 1.5466, 0.0015583)
-operation = 2
-size = Vector3(30, 3, 30)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4995, 0)
+size = Vector3(32, 1, 32)
 material = ExtResource("2_yqjtg")
 
 [node name="Player" parent="." instance=ExtResource("1_uwrxv")]
