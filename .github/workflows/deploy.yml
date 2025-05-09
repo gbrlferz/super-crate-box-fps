@@ -33,7 +33,7 @@ jobs:
 
     - name: Deploy Windows Build
       run: |
-        ./butler push --fix-permissions --verbose ./windows \
+        ./butler push --fix-permissions --verbose ./build \
           ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:windows
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
