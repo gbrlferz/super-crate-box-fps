@@ -22,7 +22,7 @@ jobs:
         cache: false # Disabled caching to avoid issues with legacy service shutdown
 
     - name: Verify Windows Build
-      run: ls -lR ./windows
+      run: ls -lR ./build
 
     - name: Install Butler
       run: |
