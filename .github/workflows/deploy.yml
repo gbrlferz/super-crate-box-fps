@@ -1,4 +1,4 @@
-name: Deploy to itch.io
+name: Deploy Windows Build to itch.io
 
 on:
   push:
@@ -11,28 +11,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Export Godot Project (Web)
+    - name: Export Windows Build
       uses: firebelley/godot-export@v6.0.0
       with:
-        # Use GitHub's official Godot mirror instead of TuxFamily
         godot_executable_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
         godot_export_templates_download_url: https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
         relative_project_path: ./
+        presets_to_export: "Windows"  # Single preset name
         use_preset_export_path: true
         cache: true
 
+    - name: Verify Windows Build
+      run: ls -lR ./windows
+
     - name: Install Butler
       run: |
-        # Add retry logic for butler installation
-        for i in {1..5}; do
-          curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default && break || sleep 15
-        done
+        curl -s -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
         unzip -q butler.zip
         chmod +x butler
         ./butler -V
 
-    - name: Deploy to itch.io
+    - name: Deploy Windows Build
       run: |
-        ./butler push --fix-permissions --verbose ./web ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:web
+        ./butler push --fix-permissions --verbose ./windows \
+          ${{ secrets.ITCH_USERNAME }}/${{ secrets.ITCH_GAME_NAME }}:windows
       env:
         BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
