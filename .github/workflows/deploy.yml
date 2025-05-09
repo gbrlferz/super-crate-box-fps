@@ -19,7 +19,7 @@ jobs:
         relative_project_path: ./
         presets_to_export: "Windows"  # Single preset name
         use_preset_export_path: true
-        cache: true
+        cache: false # Disabled caching to avoid issues with legacy service shutdown
 
     - name: Verify Windows Build
       run: ls -lR ./windows
