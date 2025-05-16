@@ -1,20 +1,23 @@
-[gd_scene load_steps=12 format=3 uid="uid://xqd5ps5hs2g5"]
+[gd_scene load_steps=17 format=3 uid="uid://xqd5ps5hs2g5"]
 
+[ext_resource type="Theme" uid="uid://nof71bqf6era" path="res://themes/default_theme.tres" id="1_gee14"]
 [ext_resource type="Script" uid="uid://c78xynregrfk5" path="res://enemies/enemy_spawner.gd" id="1_lbhrr"]
+[ext_resource type="Script" uid="uid://y02vrcpjc8ll" path="res://ui/hud/hud.gd" id="1_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://c1us2u15454rf" path="res://fps_controller/fps_controller.tscn" id="1_uwrxv"]
 [ext_resource type="Material" uid="uid://w5ux2u2ooto5" path="res://materials/prototype.tres" id="2_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://dnkd7ujhu5sqc" path="res://scenes/enemy.tscn" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://dep7fi63k4d47" path="res://portal/portal.gd" id="5_iywne"]
+[ext_resource type="Script" uid="uid://bfl0udu4a6civ" path="res://crate/crate.gd" id="6_p57ef"]
 
 [sub_resource type="Gradient" id="Gradient_lnu2h"]
 interpolation_mode = 1
-offsets = PackedFloat32Array(0, 0.422566, 0.497788)
+offsets = PackedFloat32Array(0, 0.38, 0.686667)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_lbhrr"]
 gradient = SubResource("Gradient_lnu2h")
-width = 6
-height = 6
+width = 8
+height = 8
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -32,37 +35,42 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_lnu2h"]
-vertices = PackedVector3Array(-15.5, 0.5005, -15.5, -15.5, 0.5005, 15.5, 15.5, 0.5005, 15.5, 15.5, 0.5005, -15.5)
+vertices = PackedVector3Array(-24.5, 0.5005, -24.5, -24.5, 0.5005, 24.5, 24.5, 0.5005, 24.5, 24.5, 0.5005, -24.5)
 polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_iywne"]
+size = Vector3(1, 1, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_iywne"]
+size = Vector3(1, 1, 2)
 
 [node name="Game" type="Node3D"]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Control" type="Control" parent="CanvasLayer"]
-layout_mode = 3
+[node name="HUD" type="MarginContainer" parent="CanvasLayer" node_paths=PackedStringArray("points_label")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("1_gee14")
+script = ExtResource("1_u5sy4")
+points_label = NodePath("Label")
 
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 3.0
-offset_bottom = 3.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Reticle" type="TextureRect" parent="CanvasLayer/HUD"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 texture = SubResource("GradientTexture2D_lbhrr")
 stretch_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "0"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
@@ -90,7 +98,7 @@ use_collision = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="NavigationRegion3D/Map/CSGCombiner3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4995, 0)
-size = Vector3(32, 1, 32)
+size = Vector3(50, 1, 50)
 material = ExtResource("2_yqjtg")
 
 [node name="Player" parent="." instance=ExtResource("1_uwrxv")]
@@ -106,3 +114,17 @@ script = ExtResource("5_iywne")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 radius = 1.0
 height = 4.0
+
+[node name="CrateBox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6964, 0, 9.97342)
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("6_p57ef")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CrateBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_iywne")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CrateBox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_iywne")

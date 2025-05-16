@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://c1us2u15454rf"]
+[gd_scene load_steps=8 format=3 uid="uid://c1us2u15454rf"]
 
 [ext_resource type="Script" uid="uid://c1tgtjb53i3ki" path="res://fps_controller/fps_controller.gd" id="1_pquoo"]
 [ext_resource type="PackedScene" uid="uid://c8wtwakfof8sn" path="res://fps_controller/weapon_manager/weapon_manager.tscn" id="2_icmn0"]
+[ext_resource type="Script" uid="uid://bw01vusod0yfl" path="res://fps_controller/player_audio.gd" id="3_vgwmt"]
+[ext_resource type="AudioStream" uid="uid://4or1l58aai3j" path="res://audio/kenney_impact_sounds/impactMetal_heavy_002.ogg" id="4_y4jce"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r46qa"]
 
@@ -10,7 +12,7 @@
 [sub_resource type="BoxMesh" id="BoxMesh_nrrn1"]
 size = Vector3(0.5, 0.25, 0.2)
 
-[node name="CharacterBody3D" type="CharacterBody3D"]
+[node name="FPSController" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_pquoo")
@@ -48,3 +50,8 @@ collision_mask = 64
 collide_with_areas = true
 
 [node name="ViewModel" type="Node3D" parent="Head/Camera3D"]
+
+[node name="PlayerAudio" type="AudioStreamPlayer3D" parent="." node_paths=PackedStringArray("weapon_manager")]
+script = ExtResource("3_vgwmt")
+weapon_manager = NodePath("../WeaponManager")
+shoot_clip = ExtResource("4_y4jce")
